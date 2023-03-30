@@ -69,9 +69,7 @@ public class Paper1 {
             // Second step: Create Datacenters
             //Datacenters are the resource providers in CloudSim. We need at list one of them to run a CloudSim simulation
             @SuppressWarnings("unused")
-            Datacenter datacenterSpecial = createDatacenter("Datacenter_special", mips, ram, size, bw, 20);
-            @SuppressWarnings("unused")
-            Datacenter datacenterGeneral = createDatacenter("Datacenter_general", mips, ram, size, bw, 80);
+            Datacenter datacenter = createDatacenter("Datacenter_Apna", mips, ram, size, bw, 100);
 
             //Third step: Create Broker
             DataCenterBroker1 broker = createBroker();
@@ -91,11 +89,18 @@ public class Paper1 {
 //            vmlist.add(vm2);
 
             //create 100 VMs
-            for (int i = 0; i < 100; i++) {
-                MyVm vm = new MyVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared());
+            for (int i = 0; i < 20; i++) {
+                MyVm vm = new MyVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared(),Constant1.PRIORITY_SPECIAL);
                 vmlist.add(vm);
                 vmid++;
             }
+
+            for(int i=20;i<100;i++){
+                MyVm vm = new MyVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared(),Constant1.PRIORITY_NORMAL);
+                vmlist.add(vm);
+                vmid++;
+            }
+
 
             //submit vm list to the broker
             broker.submitVmList(vmlist);
@@ -120,6 +125,7 @@ public class Paper1 {
                 //System.out.println("Delay: " + delay);
                 CustomCloudlet cloudlet = new CustomCloudlet(patient.patientId, Constant1.LENGTH_FACTOR * patient.patientDuration, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel, patient.patientPriority, delay);
                 cloudlet.setUserId(brokerId);
+               // System.out.println("VM ID OF CLOUDLET: " + cloudlet.getVmId());
                 cloudletList.add(cloudlet);
             }
 
@@ -257,7 +263,7 @@ public class Paper1 {
         Log.printLine();
         Log.printLine("========== OUTPUT ==========");
         Log.printLine("Cloudlet ID" + indent + "Cloudlet Length" + indent + "Priority" + indent + "STATUS" + indent +
-                "Data center ID" + indent + "VM ID" + indent + "Time" + indent + "Start Time" + indent + "Finish Time");
+                "Data center ID" + indent + "VM ID" +indent+"VM Type"+ indent + "Time" + indent + "Start Time" + indent + "Finish Time");
 
         DecimalFormat dft = new DecimalFormat("###.##");
         for (int i = 0; i < size; i++) {
@@ -267,7 +273,7 @@ public class Paper1 {
             if (cloudlet.getCloudletStatus() == CustomCloudlet.SUCCESS) {
                 Log.print("SUCCESS");
 
-                Log.printLine(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() +
+                Log.printLine(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId()+indent + indent + indent+ (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") +
                         indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) +
                         indent + indent + dft.format(cloudlet.getFinishTime()));
             }

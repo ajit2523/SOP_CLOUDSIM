@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9ed1bca9-2e20-46f7-b3e4-2901f4684554" name="Changes" comment="Init" />
+    <list default="true" id="9ed1bca9-2e20-46f7-b3e4-2901f4684554" name="Changes" comment="Init">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/org/cloudbus/cloudsim/examples/MyVm.java" beforeDir="false" afterPath="$PROJECT_DIR$/examples/org/cloudbus/cloudsim/examples/MyVm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/org/cloudbus/cloudsim/examples/Paper1.java" beforeDir="false" afterPath="$PROJECT_DIR$/examples/org/cloudbus/cloudsim/examples/Paper1.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,7 +96,7 @@
       <workItem from="1680183981996" duration="4357000" />
       <workItem from="1680191158730" duration="7145000" />
       <workItem from="1680200848516" duration="275000" />
-      <workItem from="1680201132861" duration="2704000" />
+      <workItem from="1680201132861" duration="4797000" />
     </task>
     <servers />
   </component>

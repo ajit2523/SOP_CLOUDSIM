@@ -7,11 +7,14 @@ import org.cloudbus.cloudsim.Vm;
 import java.util.List;
 
 public class MyVm extends Vm {
-    private long maxCycles = Constant1.LENGTH_FACTOR * 60;
+
+    public final int priority;
+    public final long maxCycles = Constant1.LENGTH_FACTOR * 60;
     private long cyclesCompleted = 0;
 
     public MyVm(int id, int userId, double mips, int pesNumber, int ram, long bw, long size, String vmm,
-                CloudletScheduler cloudletScheduler) {
+                CloudletScheduler cloudletScheduler, int priority) {
         super(id, userId, mips, pesNumber, ram, bw, size, vmm, cloudletScheduler);
+        this.priority = priority;
     }
 }
