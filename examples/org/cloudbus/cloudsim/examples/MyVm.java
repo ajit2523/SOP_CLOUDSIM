@@ -10,7 +10,7 @@ public class MyVm extends Vm {
 
     public final int priority;
     public final long maxCycles = Constant1.LENGTH_FACTOR * 60;
-    private long cyclesCompleted = 0;
+    public long cyclesCompleted = 0;
 
     public MyVm(int id, int userId, double mips, int pesNumber, int ram, long bw, long size, String vmm,
                 CloudletScheduler cloudletScheduler, int priority) {

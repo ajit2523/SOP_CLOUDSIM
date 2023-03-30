@@ -8,11 +8,7 @@
 
 package org.cloudbus.cloudsim.examples;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.*;
@@ -31,12 +27,12 @@ public class DataCenterBroker1 extends SimEntity {
     /**
      * The vm list.
      */
-    protected List<? extends Vm> vmList;
+    protected List<? extends MyVm> vmList;
 
     /**
      * The vms created list.
      */
-    protected List<? extends Vm> vmsCreatedList;
+    protected List<? extends MyVm> vmsCreatedList;
 
     /**
      * The cloudlet list.
@@ -105,8 +101,8 @@ public class DataCenterBroker1 extends SimEntity {
     public DataCenterBroker1(String name) throws Exception {
         super(name);
 
-        setVmList(new ArrayList<Vm>());
-        setVmsCreatedList(new ArrayList<Vm>());
+        setVmList(new ArrayList<MyVm>());
+        setVmsCreatedList(new ArrayList<MyVm>());
         setCloudletList(new ArrayList<CustomCloudlet>());
         setCloudletSubmittedList(new ArrayList<CustomCloudlet>());
         setCloudletReceivedList(new ArrayList<CustomCloudlet>());
@@ -130,7 +126,7 @@ public class DataCenterBroker1 extends SimEntity {
      * @pre list !=null
      * @post $none
      */
-    public void submitVmList(List<? extends Vm> list) {
+    public void submitVmList(List<? extends MyVm> list) {
         getVmList().addAll(list);
     }
 
@@ -333,7 +329,7 @@ public class DataCenterBroker1 extends SimEntity {
         // send as much vms as possible for this datacenter before trying the next one
         int requestedVms = 0;
         String datacenterName = CloudSim.getEntityName(datacenterId);
-        for (Vm vm : getVmList()) {
+        for (MyVm vm : getVmList()) {
             if (!getVmsToDatacentersMap().containsKey(vm.getId())) {
                 Log.printLine(CloudSim.clock() + ": " + getName() + ": Trying to Create VM #" + vm.getId()
                         + " in " + datacenterName);
@@ -355,12 +351,115 @@ public class DataCenterBroker1 extends SimEntity {
      * @post $none
      */
     protected void submitCloudlets() {
-        int vmIndex = 0;
+        List<CustomCloudlet> specialCloudletList = new ArrayList<CustomCloudlet>();
+        List<CustomCloudlet> normalCloudletList = new ArrayList<CustomCloudlet>();
+
         for (CustomCloudlet cloudlet : getCloudletList()) {
-            Vm vm;
+            if (cloudlet.getVmId() == -1 && cloudlet.getPriority() == Constant1.PRIORITY_SPECIAL) {
+                specialCloudletList.add(cloudlet);
+            } else if (cloudlet.getVmId() == -1 && cloudlet.getPriority() == Constant1.PRIORITY_NORMAL) {
+                normalCloudletList.add(cloudlet);
+            }
+        }
+
+        List<CustomCloudlet> tempCloudletList = new ArrayList<CustomCloudlet>();
+        while (!specialCloudletList.isEmpty() || !normalCloudletList.isEmpty()) {
+            if (!specialCloudletList.isEmpty()) {
+                tempCloudletList.add(specialCloudletList.get(0));
+                specialCloudletList.remove(0);
+            }
+            if (!specialCloudletList.isEmpty()) {
+                tempCloudletList.add(specialCloudletList.get(0));
+                specialCloudletList.remove(0);
+            }
+            if (!normalCloudletList.isEmpty()) {
+                tempCloudletList.add(normalCloudletList.get(0));
+                normalCloudletList.remove(0);
+            }
+        }
+        tempCloudletList.sort(Comparator.comparingInt(o -> (int) o.getDelayCloudlet()));
+
+        int vmIndexNormal = 20;
+        int vmIndexSpecial = 0;
+        for (CustomCloudlet cloudlet : tempCloudletList) {
+            MyVm vm;
             // if user didn't bind this cloudlet and it has not been executed yet
             if (cloudlet.getVmId() == -1) {
-                vm = getVmsCreatedList().get(vmIndex);
+                if (cloudlet.getPriority() == Constant1.PRIORITY_NORMAL) {
+                    vm = VmList.getById(getVmsCreatedList(), vmIndexNormal);
+                    int temp = vmIndexNormal;
+                    do {
+                        vmIndexNormal = (vmIndexNormal + 1) % 100 > 19 ? (vmIndexNormal + 1) % 100 : (vmIndexNormal + 1) % 100 + 20;
+                        vm = VmList.getById(getVmsCreatedList(), vmIndexNormal);
+                        if (vm.cyclesCompleted + cloudlet.getCloudletLength() <= vm.maxCycles) {
+                            vm.cyclesCompleted += cloudlet.getCloudletLength();
+                            Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
+                                    + cloudlet.getCloudletId() + " to VM #" + vm.getId());
+                            cloudlet.setVmId(vm.getId());
+
+                            double delayValue = cloudlet.getDelayCloudlet();
+
+                            if (delayValue != 0) {
+                                send(getVmsToDatacentersMap().get(vm.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                            } else {
+                                sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                            }
+
+                            cloudletsSubmitted++;
+                            getCloudletSubmittedList().add(cloudlet);
+                            // remove submitted cloudlets from waiting list
+                            for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
+                                getCloudletList().remove(cloudlet1);
+                         //       tempCloudletList.remove(cloudlet1);
+                            }
+                        }
+
+                        if (temp == vmIndexNormal) {
+                            Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
+                                    + cloudlet.getCloudletId() + ": bount VM not available");
+                            break;
+                        }
+                    } while (vm.cyclesCompleted + cloudlet.getCloudletLength() > vm.maxCycles);
+                    vmIndexNormal = (vmIndexNormal + 1) % 100 > 19 ? (vmIndexNormal + 1) % 100 : (vmIndexNormal + 1) % 100 + 20;
+                }
+                else if (cloudlet.getPriority() == Constant1.PRIORITY_SPECIAL){
+                    vm = VmList.getById(getVmsCreatedList(), vmIndexSpecial);
+                    int temp = vmIndexSpecial;
+                   do {
+                        vmIndexSpecial = (vmIndexSpecial + 1) % 100;
+                        vm = VmList.getById(getVmsCreatedList(), vmIndexSpecial);
+
+                        if (vm.cyclesCompleted + cloudlet.getCloudletLength() <= vm.maxCycles) {
+                            vm.cyclesCompleted += cloudlet.getCloudletLength();
+                            Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
+                                    + cloudlet.getCloudletId() + " to VM #" + vm.getId());
+                            cloudlet.setVmId(vm.getId());
+
+                            double delayValue = cloudlet.getDelayCloudlet();
+
+                            if (delayValue != 0) {
+                                send(getVmsToDatacentersMap().get(vm.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                            } else {
+                                sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                            }
+
+                            cloudletsSubmitted++;
+                            getCloudletSubmittedList().add(cloudlet);
+                            // remove submitted cloudlets from waiting list
+                            for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
+                                getCloudletList().remove(cloudlet1);
+                          //      tempCloudletList.remove(cloudlet1);
+                            }
+                        }
+
+                        if (temp == vmIndexSpecial) {
+                            Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
+                                    + cloudlet.getCloudletId() + ": bount VM not available");
+                            break;
+                        }
+                    }  while (vm.cyclesCompleted + cloudlet.getCloudletLength() > vm.maxCycles);
+                    vmIndexSpecial = (vmIndexSpecial + 1) % 20;
+                }
             } else { // submit to the specific vm
                 vm = VmList.getById(getVmsCreatedList(), cloudlet.getVmId());
                 if (vm == null) { // vm was not created
@@ -369,27 +468,6 @@ public class DataCenterBroker1 extends SimEntity {
                     continue;
                 }
             }
-
-            Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
-                    + cloudlet.getCloudletId() + " to VM #" + vm.getId());
-            cloudlet.setVmId(vm.getId());
-
-            double delayValue = cloudlet.getDelayCloudlet();
-
-            if (delayValue != 0) {
-                send(getVmsToDatacentersMap().get(vm.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
-            } else {
-                sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
-            }
-
-            cloudletsSubmitted++;
-            vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
-            getCloudletSubmittedList().add(cloudlet);
-        }
-
-        // remove submitted cloudlets from waiting list
-        for (CustomCloudlet cloudlet : getCloudletSubmittedList()) {
-            getCloudletList().remove(cloudlet);
         }
     }
 
@@ -400,7 +478,7 @@ public class DataCenterBroker1 extends SimEntity {
      * @post $none
      */
     protected void clearDatacenters() {
-        for (Vm vm : getVmsCreatedList()) {
+        for (MyVm vm : getVmsCreatedList()) {
             Log.printLine(CloudSim.clock() + ": " + getName() + ": Destroying VM #" + vm.getId());
             sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.VM_DESTROY, vm);
         }
@@ -444,7 +522,7 @@ public class DataCenterBroker1 extends SimEntity {
      * @return the vm list
      */
     @SuppressWarnings("unchecked")
-    public <T extends Vm> List<T> getVmList() {
+    public <T extends MyVm> List<T> getVmList() {
         return (List<T>) vmList;
     }
 
@@ -454,7 +532,7 @@ public class DataCenterBroker1 extends SimEntity {
      * @param <T>    the generic type
      * @param vmList the new vm list
      */
-    protected <T extends Vm> void setVmList(List<T> vmList) {
+    protected <T extends MyVm> void setVmList(List<T> vmList) {
         this.vmList = vmList;
     }
 
@@ -528,7 +606,7 @@ public class DataCenterBroker1 extends SimEntity {
      * @return the vm list
      */
     @SuppressWarnings("unchecked")
-    public <T extends Vm> List<T> getVmsCreatedList() {
+    public <T extends MyVm> List<T> getVmsCreatedList() {
         return (List<T>) vmsCreatedList;
     }
 
@@ -538,7 +616,7 @@ public class DataCenterBroker1 extends SimEntity {
      * @param <T>            the generic type
      * @param vmsCreatedList the vms created list
      */
-    protected <T extends Vm> void setVmsCreatedList(List<T> vmsCreatedList) {
+    protected <T extends MyVm> void setVmsCreatedList(List<T> vmsCreatedList) {
         this.vmsCreatedList = vmsCreatedList;
     }
 

@@ -279,5 +279,8 @@ public class Paper1 {
             }
         }
 
+        System.out.println("\n**********************************************************************************\n");
+        System.out.println("Total number of cloudlets allocated: "+list.size());
+
     }
 }
