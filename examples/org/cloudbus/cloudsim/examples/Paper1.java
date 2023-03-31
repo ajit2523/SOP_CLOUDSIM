@@ -9,11 +9,14 @@
 
 package org.cloudbus.cloudsim.examples;
 
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.io.File;
 
 import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -69,7 +72,7 @@ public class Paper1 {
             // Second step: Create Datacenters
             //Datacenters are the resource providers in CloudSim. We need at list one of them to run a CloudSim simulation
             @SuppressWarnings("unused")
-            Datacenter datacenter = createDatacenter("Datacenter_Apna", mips, ram, size, bw, 100);
+            Datacenter datacenter = createDatacenter("Datacenter_Apna", mips, ram, size, bw, Constant1.MACHINES);
 
             //Third step: Create Broker
             DataCenterBroker1 broker = createBroker();
@@ -89,14 +92,14 @@ public class Paper1 {
 //            vmlist.add(vm2);
 
             //create 100 VMs
-            for (int i = 0; i < 20; i++) {
-                MyVm vm = new MyVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared(),Constant1.PRIORITY_SPECIAL);
+            for (int i = 0; i < Constant1.SPECIAL_MACHINES; i++) {
+                MyVm vm = new MyVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared(), Constant1.PRIORITY_SPECIAL);
                 vmlist.add(vm);
                 vmid++;
             }
 
-            for(int i=20;i<100;i++){
-                MyVm vm = new MyVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared(),Constant1.PRIORITY_NORMAL);
+            for (int i = Constant1.SPECIAL_MACHINES; i < Constant1.MACHINES; i++) {
+                MyVm vm = new MyVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared(), Constant1.PRIORITY_NORMAL);
                 vmlist.add(vm);
                 vmid++;
             }
@@ -125,7 +128,7 @@ public class Paper1 {
                 //System.out.println("Delay: " + delay);
                 CustomCloudlet cloudlet = new CustomCloudlet(patient.patientId, Constant1.LENGTH_FACTOR * patient.patientDuration, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel, patient.patientPriority, delay);
                 cloudlet.setUserId(brokerId);
-               // System.out.println("VM ID OF CLOUDLET: " + cloudlet.getVmId());
+                // System.out.println("VM ID OF CLOUDLET: " + cloudlet.getVmId());
                 cloudletList.add(cloudlet);
             }
 
@@ -256,14 +259,23 @@ public class Paper1 {
      * @param list list of Cloudlets
      */
     private static void printCloudletList(List<CustomCloudlet> list) {
+        //Change std out to file
+        try {
+            File file = new File("./examples/org/cloudbus/cloudsim/examples/output.txt");
+            System.setOut(new PrintStream(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         int size = list.size();
         CustomCloudlet cloudlet;
 
         String indent = "    ";
         Log.printLine();
         Log.printLine("========== OUTPUT ==========");
-        Log.printLine("Cloudlet ID" + indent + "Cloudlet Length" + indent + "Priority" + indent + "STATUS" + indent +
-                "Data center ID" + indent + "VM ID" +indent+"VM Type"+ indent + "Time" + indent + "Start Time" + indent + "Finish Time");
+        String outputHeading = "Cloudlet ID" + indent + "Cloudlet Length" + indent + "Priority" + indent + "STATUS" + indent +
+                "Data center ID" + indent + "VM ID" + indent + "VM Type" + indent + "Time" + indent + "Start Time" + indent + "Finish Time";
+        Log.printLine(outputHeading);
 
         DecimalFormat dft = new DecimalFormat("###.##");
         for (int i = 0; i < size; i++) {
@@ -273,14 +285,39 @@ public class Paper1 {
             if (cloudlet.getCloudletStatus() == CustomCloudlet.SUCCESS) {
                 Log.print("SUCCESS");
 
-                Log.printLine(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId()+indent + indent + indent+ (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") +
+                Log.printLine(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") +
+                        indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) +
+                        indent + indent + dft.format(cloudlet.getFinishTime()));
+            }
+        }
+
+        Log.printLine("\n**********************************************************************************\n");
+        Log.printLine("Total number of cloudlets allocated: " + list.size());
+
+
+        //Prinitng to File
+//        String indent = "    ";
+        System.out.println();
+        System.out.println("========== OUTPUT ==========");
+        System.out.println(outputHeading);
+
+//        DecimalFormat dft = new DecimalFormat("###.##");
+        for (int i = 0; i < size; i++) {
+            cloudlet = list.get(i);
+            System.out.print(indent + cloudlet.getCloudletId() + indent + indent + indent + cloudlet.getCloudletLength() + indent + indent + indent + (cloudlet.getPriority() == 1 ? "High" : "Low ") + "  " + indent);
+
+            if (cloudlet.getCloudletStatus() == CustomCloudlet.SUCCESS) {
+                System.out.print("SUCCESS");
+
+                System.out.println(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") +
                         indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) +
                         indent + indent + dft.format(cloudlet.getFinishTime()));
             }
         }
 
         System.out.println("\n**********************************************************************************\n");
-        System.out.println("Total number of cloudlets allocated: "+list.size());
+        System.out.println("Total number of cloudlets allocated: " + list.size());
 
     }
+
 }
