@@ -32,6 +32,8 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
  */
 public class Paper1 {
 
+    private static List<PatientData> patientList;
+
     /**
      * The cloudlet list.
      */
@@ -108,7 +110,7 @@ public class Paper1 {
             //submit vm list to the broker
             broker.submitVmList(vmlist);
 
-            List<PatientData> patientList = CSVReader.readCSV("examples/org/cloudbus/cloudsim/examples/patient_entry.csv");
+            patientList = CSVReader.readCSV("examples/org/cloudbus/cloudsim/examples/patient_entry.csv");
 
             //read CSV
 
@@ -161,7 +163,7 @@ public class Paper1 {
 
             CloudSim.stopSimulation();
 
-            printCloudletList(newList);
+            printCloudletList(newList, patientList);
 
             Log.printLine("Paper1 finished!");
         } catch (Exception e) {
@@ -258,7 +260,7 @@ public class Paper1 {
      *
      * @param list list of Cloudlets
      */
-    private static void printCloudletList(List<CustomCloudlet> list) {
+    private static void printCloudletList(List<CustomCloudlet> list, List<PatientData> patientDataList) {
         //Change std out to file
         try {
             File file = new File("./examples/org/cloudbus/cloudsim/examples/output.txt");
@@ -293,6 +295,15 @@ public class Paper1 {
 
         Log.printLine("\n**********************************************************************************\n");
         Log.printLine("Total number of cloudlets allocated: " + list.size());
+        int specialAllocated=0;
+        for(int i=0;i<list.size();i++){
+            if(list.get(i).getPriority()==Constant1.PRIORITY_SPECIAL)
+                specialAllocated++;
+        }
+        Log.printLine("Total number of high priority cloudlets allocated: " + specialAllocated);
+        Log.printLine("Total number of low priority cloudlets allocated: " + (list.size()-specialAllocated));
+
+        Log.printLine("Total number of cloudlets unallocated: " + (patientDataList.size()-list.size()));
 
 
         //Prinitng to File
@@ -317,6 +328,14 @@ public class Paper1 {
 
         System.out.println("\n**********************************************************************************\n");
         System.out.println("Total number of cloudlets allocated: " + list.size());
+//        int specialAllocated=0;
+//        for(int i=0;i<list.size();i++){
+//            if(list.get(i).getPriority()==Constant1.PRIORITY_SPECIAL)
+//               specialAllocated++;
+//        }
+        System.out.println("Total number of high priority cloudlets allocated: " + specialAllocated);
+        System.out.println("Total number of low priority cloudlets allocated: " + (list.size()-specialAllocated));
+        System.out.println("Total number of cloudlets unallocated: " + (patientDataList.size()-list.size()));
 
     }
 

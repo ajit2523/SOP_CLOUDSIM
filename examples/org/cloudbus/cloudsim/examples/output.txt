@@ -1722,3 +1722,6 @@ Cloudlet ID    Cloudlet Length    Priority    STATUS    Data center ID    VM ID 
 **********************************************************************************
 
 Total number of cloudlets allocated: 1717
+Total number of high priority cloudlets allocated: 875
+Total number of low priority cloudlets allocated: 842
+Total number of cloudlets unallocated: 796
