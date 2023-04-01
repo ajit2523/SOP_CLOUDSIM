@@ -194,7 +194,6 @@ public class DriverPaper1 {
 //        long storage = 1000000; //host storage
 //        int bw = 10000;
 
-
         //in this example, the VMAllocatonPolicy in use is SpaceShared. It means that only one VM
         //is allowed to run on each Pe. As each Host has only one Pe, only one VM can run on each Host.
 
