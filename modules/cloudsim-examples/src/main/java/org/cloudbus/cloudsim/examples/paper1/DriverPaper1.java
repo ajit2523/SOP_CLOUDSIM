@@ -126,7 +126,7 @@ public class DriverPaper1 {
             UtilizationModel utilizationModel = new UtilizationModelFull();
 
             for (PatientData patient : patientList) {
-                double delay = (patient.patientTimeIn * (Constant1.LENGTH_FACTOR) / mips);
+                double delay = ((double) (patient.patientTimeIn * (Constant1.LENGTH_FACTOR)) / mips);
                 //System.out.println("Delay: " + delay);
                 CustomCloudlet cloudlet = new CustomCloudlet(patient.patientId, Constant1.LENGTH_FACTOR * patient.patientDuration, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel, patient.patientPriority, delay);
                 cloudlet.setUserId(brokerId);
@@ -244,7 +244,7 @@ public class DriverPaper1 {
     //to the specific rules of the simulated scenario
     private static DataCenterBroker1 createBroker() {
 
-        DataCenterBroker1 broker = null;
+        DataCenterBroker1 broker;
         try {
             broker = new DataCenterBroker1("Broker");
         } catch (Exception e) {
@@ -283,7 +283,7 @@ public class DriverPaper1 {
             cloudlet = list.get(i);
             Log.print(indent + cloudlet.getCloudletId() + indent + indent + indent + cloudlet.getCloudletLength() + indent + indent + indent + (cloudlet.getPriority() == 1 ? "High" : "Low ") + "  " + indent);
 
-            if (cloudlet.getCloudletStatus() == CustomCloudlet.SUCCESS) {
+            if (cloudlet.getStatus() == CustomCloudlet.SUCCESS) {
                 Log.print("SUCCESS");
 
                 Log.printLine(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") +
@@ -295,8 +295,8 @@ public class DriverPaper1 {
         Log.printLine("\n**********************************************************************************\n");
         Log.printLine("Total number of cloudlets allocated: " + list.size());
         int specialAllocated=0;
-        for(int i=0;i<list.size();i++){
-            if(list.get(i).getPriority()==Constant1.PRIORITY_SPECIAL)
+        for (CustomCloudlet customCloudlet : list) {
+            if (customCloudlet.getPriority() == Constant1.PRIORITY_SPECIAL)
                 specialAllocated++;
         }
         Log.printLine("Total number of high priority cloudlets allocated: " + specialAllocated);
@@ -316,7 +316,7 @@ public class DriverPaper1 {
             cloudlet = list.get(i);
             System.out.print(indent + cloudlet.getCloudletId() + indent + indent + indent + cloudlet.getCloudletLength() + indent + indent + indent + (cloudlet.getPriority() == 1 ? "High" : "Low ") + "  " + indent);
 
-            if (cloudlet.getCloudletStatus() == CustomCloudlet.SUCCESS) {
+            if (cloudlet.getStatus() == CustomCloudlet.SUCCESS) {
                 System.out.print("SUCCESS");
 
                 System.out.println(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") +
