@@ -13,7 +13,6 @@ package org.cloudbus.cloudsim.examples.paper2;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterBroker;
@@ -39,7 +38,7 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 public class DriverPaper2 {
 
     /** The cloudlet list. */
-    private static List<Cloudlet> cloudletList;
+    private static List<CustomCloudlet> cloudletList;
 
     /** The vmlist. */
     private static List<Vm> vmlist;
@@ -72,9 +71,9 @@ public class DriverPaper2 {
     }
 
 
-    private static List<Cloudlet> createCloudlet(int userId, int cloudlets){
+    private static List<CustomCloudlet> createCloudlet(int userId, int cloudlets){
         // Creates a container to store Cloudlets
-        LinkedList<Cloudlet> list = new LinkedList<Cloudlet>();
+        LinkedList<CustomCloudlet> list = new LinkedList<CustomCloudlet>();
 
         //cloudlet parameters
         long length = 20;
@@ -83,11 +82,11 @@ public class DriverPaper2 {
         int pesNumber = 1;
         UtilizationModel utilizationModel = new UtilizationModelFull();
 
-        Cloudlet[] cloudlet = new Cloudlet[cloudlets];
+        CustomCloudlet[] cloudlet = new CustomCloudlet[cloudlets];
 
         for(int i=0;i<cloudlets;i++){
             Random rand = new Random();
-            cloudlet[i] = new Cloudlet(i, length + rand.nextInt(180), pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+            cloudlet[i] = new CustomCloudlet(i, length + rand.nextInt(180), pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
             // setting the owner of these Cloudlets
             cloudlet[i].setUserId(userId);
             //set deadline for each cloudlet randomly between 200 and 2000 ms
@@ -140,7 +139,7 @@ public class DriverPaper2 {
             CloudSim.startSimulation();
 
             // Final step: Print results when simulation is over
-            List<Cloudlet> newList = broker.getCloudletReceivedList();
+            List<CustomCloudlet> newList = broker.getCloudletReceivedList();
 
             CloudSim.stopSimulation();
 
@@ -273,9 +272,9 @@ public class DriverPaper2 {
      * Prints the Cloudlet objects
      * @param list  list of Cloudlets
      */
-    private static void printCloudletList(List<Cloudlet> list) {
+    private static void printCloudletList(List<CustomCloudlet> list) {
         int size = list.size();
-        Cloudlet cloudlet;
+        CustomCloudlet cloudlet;
 
         String indent = "    ";
         Log.printLine();
@@ -288,7 +287,7 @@ public class DriverPaper2 {
             cloudlet = list.get(i);
             Log.print(indent + cloudlet.getCloudletId() + indent + indent);
 
-            if (cloudlet.getCloudletStatus() == Cloudlet.SUCCESS){
+            if (cloudlet.getCloudletStatus() == CustomCloudlet.SUCCESS){
                 Log.print("SUCCESS");
 
                 Log.printLine( indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() +
