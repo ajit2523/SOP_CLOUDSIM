@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3f33258c-ec88-4645-a691-4c212848cf3a" name="Changes" comment="Driver1">
-      <change afterPath="$PROJECT_DIR$/modules/cloudsim-examples/src/main/java/org/cloudbus/cloudsim/examples/paper2/CustomCloudlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/cloudsim-examples/src/main/java/org/cloudbus/cloudsim/examples/paper2/DataCenterBroker2.java" afterDir="false" />
+    <list default="true" id="d992b8e1-9811-4ff6-a54f-af7e7cbfb018" name="Changes" comment="deadline and priorities">
+      <change afterPath="$PROJECT_DIR$/modules/cloudsim-examples/src/main/java/org/cloudbus/cloudsim/examples/paper2/Constant2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/cloudsim-examples/src/main/java/org/cloudbus/cloudsim/examples/paper2/DataCenterBroker2.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/cloudsim-examples/src/main/java/org/cloudbus/cloudsim/examples/paper2/DataCenterBroker2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/cloudsim-examples/src/main/java/org/cloudbus/cloudsim/examples/paper2/DriverPaper2.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/cloudsim-examples/src/main/java/org/cloudbus/cloudsim/examples/paper2/DriverPaper2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/cloudsim-examples/target/classes/org/cloudbus/cloudsim/examples/paper1/DriverPaper1.class" beforeDir="false" afterPath="$PROJECT_DIR$/modules/cloudsim-examples/target/classes/org/cloudbus/cloudsim/examples/paper1/DriverPaper1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/cloudsim-examples/target/classes/org/cloudbus/cloudsim/examples/paper2/DriverPaper2.class" beforeDir="false" afterPath="$PROJECT_DIR$/modules/cloudsim-examples/target/classes/org/cloudbus/cloudsim/examples/paper2/DriverPaper2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/cloudsim/target/classes/org/cloudbus/cloudsim/Cloudlet$Resource.class" beforeDir="false" afterPath="$PROJECT_DIR$/modules/cloudsim/target/classes/org/cloudbus/cloudsim/Cloudlet$Resource.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/cloudsim/target/classes/org/cloudbus/cloudsim/Cloudlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/modules/cloudsim/target/classes/org/cloudbus/cloudsim/Cloudlet.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,40 +28,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN"
-  }
-}]]></component>
-  <component name="GithubPullRequestsUISettings">
-    <option name="selectedUrlAndAccountId">
-      <UrlAndAccount>
-        <option name="accountId" value="188f86f2-d631-4bc5-bebd-6159e28529ab" />
-        <option name="url" value="https://github.com/gurbaaz19/SOP_CLOUDSIM.git" />
-      </UrlAndAccount>
-    </option>
-  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="useMavenConfig" value="true" />
-      </MavenGeneralSettings>
-    </option>
-  </component>
-  <component name="ProjectId" id="2NpJyvaaD4k3WFcVc2tblLKMIbE" />
+  <component name="ProjectId" id="2NpyKK8ZFxqIK8l07A9j7zBSWah" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/gurbaaz/Desktop/cloudsim-5.0&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/gurbaaz/Desktop&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -68,7 +52,6 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -79,6 +62,19 @@
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.cloudbus.cloudsim.examples.paper1.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DriverPaper2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.cloudbus.cloudsim.examples.paper2.DriverPaper2" />
+      <module name="cloudsim-examples" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.cloudbus.cloudsim.examples.paper2.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -101,6 +97,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.DriverPaper2" />
         <item itemvalue="Application.DriverPaper1" />
       </list>
     </recent_temporary>
@@ -108,57 +105,20 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3f33258c-ec88-4645-a691-4c212848cf3a" name="Changes" comment="" />
-      <created>1680355347873</created>
+      <changelist id="d992b8e1-9811-4ff6-a54f-af7e7cbfb018" name="Changes" comment="" />
+      <created>1680375254443</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1680355347873</updated>
-      <workItem from="1680355348890" duration="324000" />
-      <workItem from="1680356450969" duration="1426000" />
-      <workItem from="1680367131477" duration="17000" />
-      <workItem from="1680367158111" duration="60000" />
-      <workItem from="1680367789826" duration="94000" />
-      <workItem from="1680375053435" duration="17000" />
-      <workItem from="1680375211053" duration="563000" />
-      <workItem from="1680379618298" duration="27000" />
-      <workItem from="1680380953591" duration="23000" />
-      <workItem from="1680387528929" duration="17000" />
-      <workItem from="1680432215432" duration="293000" />
-      <workItem from="1680527070091" duration="2580000" />
+      <updated>1680375254443</updated>
+      <workItem from="1680375256136" duration="76000" />
+      <workItem from="1680375342938" duration="613000" />
+      <workItem from="1680520175229" duration="57000" />
+      <workItem from="1680520246484" duration="7432000" />
+      <workItem from="1680542585565" duration="8966000" />
     </task>
-    <task id="LOCAL-00001" summary="Driver1">
-      <created>1680540669915</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1680540669915</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Driver1">
-      <created>1680540815497</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1680540815497</updated>
-    </task>
-    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Driver1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Driver1" />
   </component>
 </project>

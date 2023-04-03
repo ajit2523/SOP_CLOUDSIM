@@ -244,6 +244,8 @@ public class Cloudlet {
      */
     private List<String> requiredFiles = null;
 
+
+    private int priority;
     /**
      * Allocates a new Cloudlet object. The Cloudlet length, input and output
      * file sizes should be greater than or equal to 1. By default this
@@ -290,6 +292,7 @@ public class Cloudlet {
         accumulatedBwCost = 0;
         costPerBw = 0;
         requiredFiles = new LinkedList<String>();
+        this.priority = 0;
     }
 
     /**
@@ -460,7 +463,30 @@ public class Cloudlet {
         setUtilizationModelBw(utilizationModelBw);
     }
 
-	// ////////////////////// INTERNAL CLASS ///////////////////////////////////
+    private double deadline;
+    public void setDeadline(double deadline) {
+        this.deadline = deadline;
+    }
+
+    public double getDeadline() {
+        return this.deadline;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public int getPriority() {
+        return this.priority;
+    }
+
+    public void setRandomPriority(){
+        int[] priorities = {1, 2, 3}; // 3 = High, 2 = Medium, 1 = Low
+        int randomIndex = (int)(Math.random() * 3);
+        this.priority = priorities[randomIndex];
+    }
+
+    // ////////////////////// INTERNAL CLASS ///////////////////////////////////
     /**
      * Internal class that keeps track of Cloudlet's movement in different
      * CloudResources. Each time a cloudlet is run on a given VM, the cloudlet's
