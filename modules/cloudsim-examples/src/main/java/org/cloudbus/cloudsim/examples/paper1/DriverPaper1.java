@@ -275,7 +275,7 @@ public class DriverPaper1 {
         Log.printLine();
         Log.printLine("========== OUTPUT ==========");
         String outputHeading = "Cloudlet ID" + indent + "Cloudlet Length" + indent + "Priority" + indent + "STATUS" + indent +
-                "Data center ID" + indent + "VM ID" + indent + "VM Type" + indent + "Time" + indent + "Start Time" + indent + "Finish Time";
+                "Data center ID" + indent + "VM ID" + indent + "VM Type" + indent + "Time" + indent + "Start Time" + indent + "Finish Time" + indent + "Waiting time";
         Log.printLine(outputHeading);
 
         DecimalFormat dft = new DecimalFormat("###.##");
@@ -286,9 +286,8 @@ public class DriverPaper1 {
             if (cloudlet.getStatus() == CustomCloudlet.SUCCESS) {
                 Log.print("SUCCESS");
 
-                Log.printLine(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") +
-                        indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) +
-                        indent + indent + dft.format(cloudlet.getFinishTime()));
+                String metrics = indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") + indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) + indent + indent + dft.format(cloudlet.getFinishTime()) + indent + indent + (cloudlet.getExecStartTime() - cloudlet.getDelayCloudlet());
+                Log.printLine(metrics);
             }
         }
 
@@ -318,10 +317,8 @@ public class DriverPaper1 {
 
             if (cloudlet.getStatus() == CustomCloudlet.SUCCESS) {
                 System.out.print("SUCCESS");
-
-                System.out.println(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") +
-                        indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) +
-                        indent + indent + dft.format(cloudlet.getFinishTime()));
+                String metrics = indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") + indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) + indent + indent + dft.format(cloudlet.getFinishTime()) + indent + indent + (cloudlet.getExecStartTime() - cloudlet.getDelayCloudlet());
+                System.out.println(metrics);
             }
         }
 
