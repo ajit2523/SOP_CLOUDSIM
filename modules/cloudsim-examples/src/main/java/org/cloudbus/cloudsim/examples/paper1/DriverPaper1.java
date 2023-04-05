@@ -279,29 +279,47 @@ public class DriverPaper1 {
         Log.printLine(outputHeading);
 
         DecimalFormat dft = new DecimalFormat("###.##");
+
+        double waitingTime = 0;
+        double totalWaitingTime = 0;
+        double totalSpecialWaitingTime = 0;
+        double totalNormalWaitingTime = 0;
         for (int i = 0; i < size; i++) {
             cloudlet = list.get(i);
             Log.print(indent + cloudlet.getCloudletId() + indent + indent + indent + cloudlet.getCloudletLength() + indent + indent + indent + (cloudlet.getPriority() == 1 ? "High" : "Low ") + "  " + indent);
 
             if (cloudlet.getStatus() == CustomCloudlet.SUCCESS) {
                 Log.print("SUCCESS");
-
-                String metrics = indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") + indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) + indent + indent + dft.format(cloudlet.getFinishTime()) + indent + indent + (cloudlet.getExecStartTime() - cloudlet.getDelayCloudlet());
+                waitingTime = cloudlet.getExecStartTime() - cloudlet.getDelayCloudlet();
+                totalWaitingTime += waitingTime;
+                if (cloudlet.getPriority() == Constant1.PRIORITY_SPECIAL) {
+                    totalSpecialWaitingTime += waitingTime;
+                } else {
+                    totalNormalWaitingTime += waitingTime;
+                }
+                String metrics = indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() + indent + indent + indent + (vmlist.get(cloudlet.getVmId()).priority == 1 ? "High" : "Low ") + indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime()) + indent + indent + dft.format(cloudlet.getFinishTime()) + indent + indent + dft.format(waitingTime);
                 Log.printLine(metrics);
             }
         }
 
         Log.printLine("\n**********************************************************************************\n");
         Log.printLine("Total number of cloudlets allocated: " + list.size());
-        int specialAllocated=0;
+        int specialAllocated = 0;
         for (CustomCloudlet customCloudlet : list) {
             if (customCloudlet.getPriority() == Constant1.PRIORITY_SPECIAL)
                 specialAllocated++;
         }
         Log.printLine("Total number of high priority cloudlets allocated: " + specialAllocated);
-        Log.printLine("Total number of low priority cloudlets allocated: " + (list.size()-specialAllocated));
+        Log.printLine("Total number of low priority cloudlets allocated: " + (list.size() - specialAllocated));
 
-        Log.printLine("Total number of cloudlets unallocated: " + (patientDataList.size()-list.size()));
+        Log.printLine("Total number of cloudlets unallocated: " + (patientDataList.size() - list.size()));
+
+        double avgWaitingTime = totalWaitingTime / size;
+        double avgSpecialWaitingTime = totalSpecialWaitingTime / specialAllocated;
+        double avgNormalWaitingTime = totalNormalWaitingTime / (size - specialAllocated);
+        Log.printLine("Avg Waiting time (After dividing by 100): " + dft.format(avgWaitingTime / 100.0));
+        Log.printLine("Avg Special Waiting time (After dividing by 100): " + dft.format(avgSpecialWaitingTime / 100.0));
+        Log.printLine("Avg Normal Waiting time (After dividing by 100): " + dft.format(avgNormalWaitingTime / 100.0));
 
 
         //Prinitng to File
@@ -330,9 +348,11 @@ public class DriverPaper1 {
 //               specialAllocated++;
 //        }
         System.out.println("Total number of high priority cloudlets allocated: " + specialAllocated);
-        System.out.println("Total number of low priority cloudlets allocated: " + (list.size()-specialAllocated));
-        System.out.println("Total number of cloudlets unallocated: " + (patientDataList.size()-list.size()));
-
+        System.out.println("Total number of low priority cloudlets allocated: " + (list.size() - specialAllocated));
+        System.out.println("Total number of cloudlets unallocated: " + (patientDataList.size() - list.size()));
+        System.out.println("Avg Waiting time (After dividing by 100): " + dft.format(avgWaitingTime / 100.0));
+        System.out.println("Avg Special Waiting time (After dividing by 100): " + dft.format(avgSpecialWaitingTime / 100.0));
+        System.out.println("Avg Normal Waiting time (After dividing by 100): " + dft.format(avgNormalWaitingTime / 100.0));
     }
 
 }

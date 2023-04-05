@@ -30,7 +30,7 @@ import static org.cloudbus.cloudsim.examples.paper2.Constant2.*;
  * @author Anton Beloglazov
  * @since CloudSim Toolkit 1.0
  */
-public class DataCenterBroker2 extends SimEntity {
+public class  DataCenterBroker2 extends SimEntity {
 
     /**
      * The list of VMs submitted to be managed by the broker.

@@ -378,115 +378,148 @@ public class DataCenterBroker1 extends SimEntity {
             }
         }
         tempCloudletList.sort(Comparator.comparingInt(o -> (int) o.getDelayCloudlet()));
+        Collections.sort(tempCloudletList, new Comparator() {
 
-        int vmIndexNormal = Constant1.SPECIAL_MACHINES;
-        int vmIndexSpecial = 0;
+            public int compare(Object o1, Object o2) {
+
+                Double x1 = ((CustomCloudlet) o1).getDelayCloudlet();
+                Double x2 = ((CustomCloudlet) o2).getDelayCloudlet();
+                int sComp = x1.compareTo(x2);
+
+                if (sComp != 0) {
+                    return sComp;
+                }
+
+                Integer a1 = ((CustomCloudlet) o1).getPriority();
+                Integer a2 = ((CustomCloudlet) o2).getPriority();
+                return a2.compareTo(a1);
+            }});
+
+        ArrayList<MyVm> specialVmsList = new ArrayList<>();
+        ArrayList<MyVm> normalVmsList = new ArrayList<>();
+
+        for (int i = 0; i < Constant1.SPECIAL_MACHINES; i++) {
+            specialVmsList.add(VmList.getById(getVmsCreatedList(), i));
+        }
+
+        for (int i = Constant1.SPECIAL_MACHINES; i < Constant1.MACHINES; i++) {
+            normalVmsList.add(VmList.getById(getVmsCreatedList(), i));
+        }
+
+        specialVmsList.sort(Comparator.comparingInt(o -> o.cyclesCompleted));
+        normalVmsList.sort(Comparator.comparingInt(o -> o.cyclesCompleted));
+
         for (CustomCloudlet cloudlet : tempCloudletList) {
-            MyVm vm;
+            MyVm vm, vm1, vm2;
             // if user didn't bind this cloudlet and it has not been executed yet
             if (cloudlet.getVmId() == -1) {
                 if (cloudlet.getPriority() == Constant1.PRIORITY_NORMAL) {
-                    int temp = vmIndexNormal;
-                    do {
-                        vmIndexNormal = (vmIndexNormal + 1) % Constant1.MACHINES > (Constant1.SPECIAL_MACHINES - 1) ? (vmIndexNormal + 1) % Constant1.MACHINES : (vmIndexNormal + 1) % Constant1.MACHINES + Constant1.SPECIAL_MACHINES;
-                        vm = VmList.getById(getVmsCreatedList(), vmIndexNormal);
-                        if (vm.cyclesCompleted + cloudlet.getCloudletLength() <= vm.maxCycles) {
-                            vm.cyclesCompleted += cloudlet.getCloudletLength();
-                            Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
-                                    + cloudlet.getCloudletId() + " to VM #" + vm.getId());
-                            cloudlet.setVmId(vm.getId());
+                    vm = VmList.getById(getVmsCreatedList(), normalVmsList.get(0).getId());
+                    if (vm != null && vm.cyclesCompleted + cloudlet.getCloudletLength()/Constant1.LENGTH_FACTOR <= vm.maxCycles) {
+                        vm.cyclesCompleted += cloudlet.getCloudletLength()/Constant1.LENGTH_FACTOR;
+                        normalVmsList.sort(Comparator.comparingInt(o -> o.cyclesCompleted));
+                        Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
+                                + cloudlet.getCloudletId() + " to VM #" + vm.getId());
+                        cloudlet.setVmId(vm.getId());
 
-                            double delayValue = cloudlet.getDelayCloudlet();
+                        double delayValue = cloudlet.getDelayCloudlet();
 
-                            if (delayValue != 0) {
-                                send(getVmsToDatacentersMap().get(vm.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
-                            } else {
-                                sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
-                            }
-
-                            cloudletsSubmitted++;
-                            getCloudletSubmittedList().add(cloudlet);
-                            // remove submitted cloudlets from waiting list
-                            for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
-                                getCloudletList().remove(cloudlet1);
-                                //       tempCloudletList.remove(cloudlet1);
-                            }
-                            break;
+                        if (delayValue != 0) {
+                            send(getVmsToDatacentersMap().get(vm.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                        } else {
+                            sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
                         }
 
-                        if (temp == vmIndexNormal) {
-                            Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
-                                    + cloudlet.getCloudletId() + ": bount VM not available");
-                            break;
+                        cloudletsSubmitted++;
+                        getCloudletSubmittedList().add(cloudlet);
+                        // remove submitted cloudlets from waiting list
+                        for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
+                            getCloudletList().remove(cloudlet1);
+                            //       tempCloudletList.remove(cloudlet1);
                         }
-                    } while (vm.cyclesCompleted + cloudlet.getCloudletLength() > vm.maxCycles);
-                    vmIndexNormal = (vmIndexNormal + 1) % Constant1.MACHINES > (Constant1.SPECIAL_MACHINES - 1) ? (vmIndexNormal + 1) % Constant1.MACHINES : (vmIndexNormal + 1) % Constant1.MACHINES + Constant1.SPECIAL_MACHINES;
-                } else if (cloudlet.getPriority() == Constant1.PRIORITY_SPECIAL) {
-                    int temp = vmIndexSpecial;
-                    do {
-                        vmIndexSpecial = (vmIndexSpecial + 1) % Constant1.MACHINES;
-                        vm = VmList.getById(getVmsCreatedList(), vmIndexSpecial);
+                    }
+                }
+                else if (cloudlet.getPriority() == Constant1.PRIORITY_SPECIAL) {
+                    vm1 = VmList.getById(getVmsCreatedList(), specialVmsList.get(0).getId());
+                    vm2 = VmList.getById(getVmsCreatedList(), normalVmsList.get(0).getId());
+                    if (vm1 != null && vm1.cyclesCompleted + cloudlet.getCloudletLength()/Constant1.LENGTH_FACTOR <= vm1.maxCycles) {
+                        vm1.cyclesCompleted += cloudlet.getCloudletLength()/Constant1.LENGTH_FACTOR;
+                        specialVmsList.sort(Comparator.comparingInt(o -> o.cyclesCompleted));
+                        Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
+                                + cloudlet.getCloudletId() + " to VM #" + vm1.getId());
+                        cloudlet.setVmId(vm1.getId());
 
-                        if (vm.cyclesCompleted + cloudlet.getCloudletLength() <= vm.maxCycles) {
-                            vm.cyclesCompleted += cloudlet.getCloudletLength();
-                            Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
-                                    + cloudlet.getCloudletId() + " to VM #" + vm.getId());
-                            cloudlet.setVmId(vm.getId());
+                        double delayValue = cloudlet.getDelayCloudlet();
 
-                            double delayValue = cloudlet.getDelayCloudlet();
-
-                            if (delayValue != 0) {
-                                send(getVmsToDatacentersMap().get(vm.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
-                            } else {
-                                sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
-                            }
-
-                            cloudletsSubmitted++;
-                            getCloudletSubmittedList().add(cloudlet);
-                            // remove submitted cloudlets from waiting list
-                            for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
-                                getCloudletList().remove(cloudlet1);
-                                //      tempCloudletList.remove(cloudlet1);
-                            }
-                            break;
+                        if (delayValue != 0) {
+                            send(getVmsToDatacentersMap().get(vm1.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                        } else {
+                            sendNow(getVmsToDatacentersMap().get(vm1.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
                         }
 
-                        if (temp == vmIndexSpecial) {
-                            Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
-                                    + cloudlet.getCloudletId() + ": bount VM not available");
-                            break;
+                        cloudletsSubmitted++;
+                        getCloudletSubmittedList().add(cloudlet);
+                        // remove submitted cloudlets from waiting list
+                        for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
+                            getCloudletList().remove(cloudlet1);
+                            //      tempCloudletList.remove(cloudlet1);
                         }
-                    } while (vm.cyclesCompleted + cloudlet.getCloudletLength() > vm.maxCycles);
-                    vmIndexSpecial = (vmIndexSpecial + 1) % Constant1.SPECIAL_MACHINES;
-                }
-            } else { // submit to the specific vm
-                vm = VmList.getById(getVmsCreatedList(), cloudlet.getVmId());
-                if (vm == null) { // vm was not created
-                    Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
-                            + cloudlet.getCloudletId() + ": bount VM not available");
-                    continue;
-                }
-                vm.cyclesCompleted += cloudlet.getCloudletLength();
-                Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
-                        + cloudlet.getCloudletId() + " to VM #" + vm.getId());
-                cloudlet.setVmId(vm.getId());
+                    }
+                    else if (vm2 != null && vm2.cyclesCompleted + cloudlet.getCloudletLength()/Constant1.LENGTH_FACTOR <= vm2.maxCycles) {
+                        vm2.cyclesCompleted += cloudlet.getCloudletLength()/Constant1.LENGTH_FACTOR;
+                        normalVmsList.sort(Comparator.comparingInt(o -> o.cyclesCompleted));
+                        Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
+                                + cloudlet.getCloudletId() + " to VM #" + vm2.getId());
+                        cloudlet.setVmId(vm2.getId());
 
-                double delayValue = cloudlet.getDelayCloudlet();
+                        double delayValue = cloudlet.getDelayCloudlet();
 
-                if (delayValue != 0) {
-                    send(getVmsToDatacentersMap().get(vm.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
-                } else {
-                    sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
-                }
+                        if (delayValue != 0) {
+                            send(getVmsToDatacentersMap().get(vm2.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                        } else {
+                            sendNow(getVmsToDatacentersMap().get(vm2.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                        }
 
-                cloudletsSubmitted++;
-                getCloudletSubmittedList().add(cloudlet);
-                // remove submitted cloudlets from waiting list
-                for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
-                    getCloudletList().remove(cloudlet1);
-                    //       tempCloudletList.remove(cloudlet1);
+                        cloudletsSubmitted++;
+                        getCloudletSubmittedList().add(cloudlet);
+                        // remove submitted cloudlets from waiting list
+                        for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
+                            getCloudletList().remove(cloudlet1);
+                            //       tempCloudletList.remove(cloudlet1);
+                        }
+                    } else {
+                        Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
+                                + cloudlet.getCloudletId() + ": bount VM not available");
+                    }
                 }
-                break;
+                else { // submit to the specific vm
+                    vm = VmList.getById(getVmsCreatedList(), cloudlet.getVmId());
+                    if (vm == null) { // vm was not created
+                        Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
+                                + cloudlet.getCloudletId() + ": bount VM not available");
+                        continue;
+                    }
+                    vm.cyclesCompleted += cloudlet.getCloudletLength();
+                    Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
+                            + cloudlet.getCloudletId() + " to VM #" + vm.getId());
+                    cloudlet.setVmId(vm.getId());
+
+                    double delayValue = cloudlet.getDelayCloudlet();
+
+                    if (delayValue != 0) {
+                        send(getVmsToDatacentersMap().get(vm.getId()), delayValue, CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                    } else {
+                        sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+                    }
+
+                    cloudletsSubmitted++;
+                    getCloudletSubmittedList().add(cloudlet);
+                    // remove submitted cloudlets from waiting list
+                    for (CustomCloudlet cloudlet1 : getCloudletSubmittedList()) {
+                        getCloudletList().remove(cloudlet1);
+                        //       tempCloudletList.remove(cloudlet1);
+                    }
+                }
             }
         }
 

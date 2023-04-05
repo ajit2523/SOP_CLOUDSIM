@@ -37,10 +37,14 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
  */
 public class DriverPaper2 {
 
-    /** The cloudlet list. */
+    /**
+     * The cloudlet list.
+     */
     private static List<CustomCloudlet> cloudletList;
 
-    /** The vmlist. */
+    /**
+     * The vmlist.
+     */
     private static List<Vm> vmlist;
 
     private static List<Vm> createVM(int userId, int vms) {
@@ -59,7 +63,7 @@ public class DriverPaper2 {
         //create VMs
         Vm[] vm = new Vm[vms];
 
-        for(int i=0;i<vms;i++){
+        for (int i = 0; i < vms; i++) {
             vm[i] = new Vm(i, userId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
             //for creating a VM with a space shared scheduling policy for cloudlets:
             //vm[i] = Vm(i, userId, mips, pesNumber, ram, bw, size, priority, vmm, new CloudletSchedulerSpaceShared());
@@ -71,7 +75,7 @@ public class DriverPaper2 {
     }
 
 
-    private static List<CustomCloudlet> createCloudlet(int userId, int cloudlets){
+    private static List<CustomCloudlet> createCloudlet(int userId, int cloudlets) {
         // Creates a container to store Cloudlets
         LinkedList<CustomCloudlet> list = new LinkedList<CustomCloudlet>();
 
@@ -84,13 +88,13 @@ public class DriverPaper2 {
 
         CustomCloudlet[] cloudlet = new CustomCloudlet[cloudlets];
 
-        for(int i=0;i<cloudlets;i++){
+        for (int i = 0; i < cloudlets; i++) {
             Random rand = new Random();
             cloudlet[i] = new CustomCloudlet(i, length + rand.nextInt(180), pesNumber, fileSize + rand.nextInt(180), outputSize, utilizationModel, utilizationModel, utilizationModel);
             // setting the owner of these Cloudlets
             cloudlet[i].setUserId(userId);
             //set deadline for each cloudlet randomly between 200 and 2000 ms
-            cloudlet[i].setDeadline(200 + rand.nextDouble()*1800);
+            cloudlet[i].setDeadline(200 + rand.nextDouble() * 1800);
             cloudlet[i].setRandomPriority();
             list.add(cloudlet[i]);
         }
@@ -122,15 +126,16 @@ public class DriverPaper2 {
             @SuppressWarnings("unused")
             Datacenter datacenter0 = createDatacenterForEdge("Datacenter_edge");
             @SuppressWarnings("unused")
-            Datacenter datacenter1 = createDatacenterForMobile("Datacenter_1");
+            Datacenter datacenter1 = createDatacenterForMobile("Datacenter_mobile");
 
             //Third step: Create Broker
             DatacenterBroker broker = createBroker();
+            assert broker != null;
             int brokerId = broker.getId();
 
             //Fourth step: Create VMs and Cloudlets and send them to broker
-            vmlist = createVM(brokerId,5); //creating 5 vms
-            cloudletList = createCloudlet(brokerId,2000); // creating 2000 cloudlets
+            vmlist = createVM(brokerId, 5); //creating 5 vms
+            cloudletList = createCloudlet(brokerId, 2000); // creating 2000 cloudlets
 
             broker.submitVmList(vmlist);
             broker.submitCloudletList(cloudletList);
@@ -145,16 +150,14 @@ public class DriverPaper2 {
 
             printCloudletList(newList);
 
-            Log.printLine("CloudSimExample6 finished!");
-        }
-        catch (Exception e)
-        {
+            Log.printLine("Paper2 finished!");
+        } catch (Exception e) {
             e.printStackTrace();
             Log.printLine("The simulation has been terminated due to an unexpected error");
         }
     }
 
-    private static Datacenter createDatacenterForEdge(String name){
+    private static Datacenter createDatacenterForEdge(String name) {
 
         // Here are the steps needed to create a PowerDatacenter:
         // 1. We need to create a list to store one or more
@@ -182,7 +185,7 @@ public class DriverPaper2 {
 //        peList2.add(new Pe(1, new PeProvisionerSimple(mips)));
 
         //4. Create Hosts with its id and list of PEs and add them to the list of machines
-        int hostId=0;
+        int hostId = 0;
         int ram = 2048; //host memory (MB)
         long storage = 1000000; //host storage
         int bw = 10000; // should be 5 megahertz
@@ -197,7 +200,6 @@ public class DriverPaper2 {
                         new VmSchedulerTimeShared(peList1)
                 )
         ); // This is our first machine
-
 
 
         //To create a host with a space-shared allocation policy for PEs to VMs:
@@ -234,10 +236,10 @@ public class DriverPaper2 {
         String vmm = "Xen";
         double time_zone = 10.0;         // time zone this resource located
         double cost = 3.0;              // the cost of using processing in this resource
-        double costPerMem = 0.05;		// the cost of using memory in this resource
-        double costPerStorage = 0.1;	// the cost of using storage in this resource
-        double costPerBw = 0.1;			// the cost of using bw in this resource
-        LinkedList<Storage> storageList = new LinkedList<Storage>();	//we are not adding SAN devices by now
+        double costPerMem = 0.05;        // the cost of using memory in this resource
+        double costPerStorage = 0.1;    // the cost of using storage in this resource
+        double costPerBw = 0.1;            // the cost of using bw in this resource
+        LinkedList<Storage> storageList = new LinkedList<Storage>();    //we are not adding SAN devices by now
 
         DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
                 arch, os, vmm, hostList, time_zone, cost, costPerMem, costPerStorage, costPerBw);
@@ -254,7 +256,7 @@ public class DriverPaper2 {
         return datacenter;
     }
 
-    private static Datacenter createDatacenterForMobile(String name){
+    private static Datacenter createDatacenterForMobile(String name) {
 
         // Here are the steps needed to create a PowerDatacenter:
         // 1. We need to create a list to store one or more
@@ -282,7 +284,7 @@ public class DriverPaper2 {
 //        peList2.add(new Pe(1, new PeProvisionerSimple(mips)));
 
         //4. Create Hosts with its id and list of PEs and add them to the list of machines
-        int hostId=0;
+        int hostId = 0;
         int ram = 2048; //host memory (MB)
         long storage = 1000000; //host storage
         int bw = 5000000; // should be 5 megahertz
@@ -297,7 +299,6 @@ public class DriverPaper2 {
                         new VmSchedulerTimeShared(peList1)
                 )
         ); // This is our first machine
-
 
 
         //To create a host with a space-shared allocation policy for PEs to VMs:
@@ -334,10 +335,10 @@ public class DriverPaper2 {
         String vmm = "Xen";
         double time_zone = 10.0;         // time zone this resource located
         double cost = 3.0;              // the cost of using processing in this resource
-        double costPerMem = 0.05;		// the cost of using memory in this resource
-        double costPerStorage = 0.1;	// the cost of using storage in this resource
-        double costPerBw = 0.1;			// the cost of using bw in this resource
-        LinkedList<Storage> storageList = new LinkedList<Storage>();	//we are not adding SAN devices by now
+        double costPerMem = 0.05;        // the cost of using memory in this resource
+        double costPerStorage = 0.1;    // the cost of using storage in this resource
+        double costPerBw = 0.1;            // the cost of using bw in this resource
+        LinkedList<Storage> storageList = new LinkedList<Storage>();    //we are not adding SAN devices by now
 
         DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
                 arch, os, vmm, hostList, time_zone, cost, costPerMem, costPerStorage, costPerBw);
@@ -356,7 +357,7 @@ public class DriverPaper2 {
 
     //We strongly encourage users to develop their own broker policies, to submit vms and cloudlets according
     //to the specific rules of the simulated scenario
-    private static DatacenterBroker createBroker(){
+    private static DatacenterBroker createBroker() {
 
         DatacenterBroker broker = null;
         try {
@@ -370,7 +371,8 @@ public class DriverPaper2 {
 
     /**
      * Prints the Cloudlet objects
-     * @param list  list of Cloudlets
+     *
+     * @param list list of Cloudlets
      */
     private static void printCloudletList(List<CustomCloudlet> list) {
         int size = list.size();
@@ -387,12 +389,12 @@ public class DriverPaper2 {
             cloudlet = list.get(i);
             Log.print(indent + cloudlet.getCloudletId() + indent + indent);
 
-            if (cloudlet.getCloudletStatus() == CustomCloudlet.SUCCESS){
+            if (cloudlet.getCloudletStatus() == CustomCloudlet.SUCCESS) {
                 Log.print("SUCCESS");
 
-                Log.printLine( indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() +
+                Log.printLine(indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() +
                         indent + indent + indent + dft.format(cloudlet.getActualCPUTime()) +
-                        indent + indent + dft.format(cloudlet.getExecStartTime())+ indent + indent + indent + dft.format(cloudlet.getFinishTime()));
+                        indent + indent + dft.format(cloudlet.getExecStartTime()) + indent + indent + indent + dft.format(cloudlet.getFinishTime()));
             }
         }
 
